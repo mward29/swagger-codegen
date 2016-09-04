@@ -23,8 +23,11 @@ import org.apache.commons.lang3.StringUtils;
 public class PythonClientCodegen extends DefaultCodegen implements CodegenConfig {
     protected String packageName;
     protected String packageVersion;
+    protected String variableNamingConvention = "snake";
     protected String apiDocPath = "docs/";
     protected String modelDocPath = "docs/";
+
+    public static String VARIABLE_NAMING_CONVENTION = "variableNamingConvention";
     
     protected Map<Character, String> regexModifiers;
     
@@ -114,6 +117,8 @@ public class PythonClientCodegen extends DefaultCodegen implements CodegenConfig
                 .defaultValue("1.0.0"));
         cliOptions.add(CliOption.newBoolean(CodegenConstants.SORT_PARAMS_BY_REQUIRED_FLAG,
                 CodegenConstants.SORT_PARAMS_BY_REQUIRED_FLAG_DESC).defaultValue(Boolean.TRUE.toString()));
+        cliOptions.add(new CliOption(VARIABLE_NAMING_CONVENTION, "naming convention of variable name camel or snake")
+                .defaultValue("snake"));
         cliOptions.add(new CliOption(CodegenConstants.HIDE_GENERATION_TIMESTAMP, "hides the timestamp when files were generated")
                 .defaultValue(Boolean.TRUE.toString()));
     }
@@ -139,6 +144,13 @@ public class PythonClientCodegen extends DefaultCodegen implements CodegenConfig
         }
         else {
             setPackageVersion("1.0.0");
+        }
+
+        if (additionalProperties.containsKey(VARIABLE_NAMING_CONVENTION)) {
+            setParameterNamingConvention((String) additionalProperties.get(VARIABLE_NAMING_CONVENTION));
+        }
+        else {
+            setParameterNamingConvention("snake");
         }
 
         // default HIDE_GENERATION_TIMESTAMP to true
@@ -324,24 +336,39 @@ public class PythonClientCodegen extends DefaultCodegen implements CodegenConfig
         // sanitize name
         name = sanitizeName(name); // FIXME: a parameter should not be assigned. Also declare the methods parameters as 'final'.
 
-        // remove dollar sign
-        name = name.replaceAll("$", "");
+        if("snake".equals(variableNamingConvention)) {
 
-        // if it's all uppper case, convert to lower case
-        if (name.matches("^[A-Z_]*$")) {
-            name = name.toLowerCase();
-        }
+            // remove dollar sign
+            name = name.replaceAll("$", "");
 
-        // underscore the variable name
-        // petId => pet_id
-        name = underscore(name);
+            // if it's all uppper case, convert to lower case
+            if (name.matches("^[A-Z_]*$")) {
+                name = name.toLowerCase();
+            }
 
-        // remove leading underscore
-        name = name.replaceAll("^_*", "");
+            // underscore the variable name
+            // petId => pet_id
+            name = underscore(name);
 
-        // for reserved word or word starting with number, append _
-        if (isReservedWord(name) || name.matches("^\\d.*")) {
-            name = escapeReservedWord(name);
+            // remove leading underscore
+            name = name.replaceAll("^_*", "");
+
+            // for reserved word or word starting with number, append _
+            if (isReservedWord(name) || name.matches("^\\d.*")) {
+                name = escapeReservedWord(name);
+            }
+
+        } else {
+
+            name = camelize(name, true);
+
+            // for reserved word or word starting with number, append _
+            if (isReservedWord(name) || name.matches("^\\d.*")) {
+                LOGGER.warn(name + " (reserved word) cannot be used as model name. before " + name);
+                name = escapeReservedWord(name);
+                LOGGER.warn(name + " (reserved word) escaped " + name);
+                LOGGER.warn(name + " (reserved word) camelized " + camelize(name, true));
+            }
         }
 
         return name;
@@ -473,6 +500,10 @@ public class PythonClientCodegen extends DefaultCodegen implements CodegenConfig
 
     public void setPackageVersion(String packageVersion) {
         this.packageVersion = packageVersion;
+    }
+
+    public void setParameterNamingConvention(String variableNamingConvention) {
+        this.variableNamingConvention = variableNamingConvention;
     }
 
     /**

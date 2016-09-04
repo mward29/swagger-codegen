@@ -100,6 +100,8 @@ class ApiClient(object):
 
         # header parameters
         header_params = header_params or {}
+        if method == "PATCH" and 'Content-Type' in self.default_headers and header_params['Content-Type'] != "application/json":
+            self.default_headers.pop('Content-Type', None)
         header_params.update(self.default_headers)
         if self.cookie:
             header_params['Cookie'] = self.cookie

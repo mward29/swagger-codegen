@@ -30,6 +30,8 @@ public class PythonClientOptionsTest extends AbstractOptionsTest {
             times = 1;
             clientCodegen.setPackageVersion(PythonClientOptionsProvider.PACKAGE_VERSION_VALUE);
             times = 1;
+            clientCodegen.setParameterNamingConvention(PythonClientOptionsProvider.VARIABLE_NAMING_CONVENTION_VALUE);
+            times = 1;
         }};
     }
 }
