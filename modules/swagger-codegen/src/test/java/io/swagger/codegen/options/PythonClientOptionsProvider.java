@@ -23,7 +23,11 @@ public class PythonClientOptionsProvider implements OptionsProvider {
         return builder.put(CodegenConstants.PACKAGE_NAME, PACKAGE_NAME_VALUE)
                 .put(CodegenConstants.PACKAGE_VERSION, PACKAGE_VERSION_VALUE)
                 .put(CodegenConstants.SORT_PARAMS_BY_REQUIRED_FLAG, "true")
+<<<<<<< HEAD
                 .put(PythonClientCodegen.VARIABLE_NAMING_CONVENTION, VARIABLE_NAMING_CONVENTION_VALUE)
+=======
+                .put(CodegenConstants.HIDE_GENERATION_TIMESTAMP, "true")
+>>>>>>> 43bac10bb3c6561cfc715db5fd718d8615a2f89f
                 .build();
     }
 

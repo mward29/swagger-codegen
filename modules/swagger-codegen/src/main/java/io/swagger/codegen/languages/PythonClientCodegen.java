@@ -117,9 +117,14 @@ public class PythonClientCodegen extends DefaultCodegen implements CodegenConfig
                 .defaultValue("1.0.0"));
         cliOptions.add(CliOption.newBoolean(CodegenConstants.SORT_PARAMS_BY_REQUIRED_FLAG,
                 CodegenConstants.SORT_PARAMS_BY_REQUIRED_FLAG_DESC).defaultValue(Boolean.TRUE.toString()));
+<<<<<<< HEAD
         cliOptions.add(new CliOption(VARIABLE_NAMING_CONVENTION, "naming convention of variable name camel or snake")
                 .defaultValue("snake"));
 
+=======
+        cliOptions.add(new CliOption(CodegenConstants.HIDE_GENERATION_TIMESTAMP, "hides the timestamp when files were generated")
+                .defaultValue(Boolean.TRUE.toString()));
+>>>>>>> 43bac10bb3c6561cfc715db5fd718d8615a2f89f
     }
 
     @Override
@@ -145,11 +150,20 @@ public class PythonClientCodegen extends DefaultCodegen implements CodegenConfig
             setPackageVersion("1.0.0");
         }
 
+<<<<<<< HEAD
         if (additionalProperties.containsKey(VARIABLE_NAMING_CONVENTION)) {
             setParameterNamingConvention((String) additionalProperties.get(VARIABLE_NAMING_CONVENTION));
         }
         else {
             setParameterNamingConvention("snake");
+=======
+        // default HIDE_GENERATION_TIMESTAMP to true
+        if (!additionalProperties.containsKey(CodegenConstants.HIDE_GENERATION_TIMESTAMP)) {
+            additionalProperties.put(CodegenConstants.HIDE_GENERATION_TIMESTAMP, Boolean.TRUE.toString());
+        } else {
+            additionalProperties.put(CodegenConstants.HIDE_GENERATION_TIMESTAMP,
+                    Boolean.valueOf((String)additionalProperties().get(CodegenConstants.HIDE_GENERATION_TIMESTAMP).toString()));
+>>>>>>> 43bac10bb3c6561cfc715db5fd718d8615a2f89f
         }
 
         additionalProperties.put(CodegenConstants.PACKAGE_NAME, packageName);
@@ -216,7 +230,7 @@ public class PythonClientCodegen extends DefaultCodegen implements CodegenConfig
                         + "/pattern/modifiers convention. "+pattern+" is not valid.");
             }
 
-            String regex = pattern.substring(1, i).replace("'", "\'");
+            String regex = pattern.substring(1, i).replace("'", "\\'");
             List<String> modifiers = new ArrayList<String>();
 
             for(char c : pattern.substring(i).toCharArray()) {
